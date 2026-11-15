@@ -202,6 +202,6 @@ $("#authSubmit").addEventListener("click", async () => {
     setTimeout(() => show("home"), 600);
   } catch {
     msg.classList.add("error");
-    msg.textContent = "Login isn't connected to a backend yet.";
+    msg.textContent = "Login isn't connected to a backend yet.";//kg
   }
 });
