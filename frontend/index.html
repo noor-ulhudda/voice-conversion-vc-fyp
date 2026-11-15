@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Convert – Voice conversion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" data-go="home" aria-label="Convert home">
+      <svg class="logo" viewBox="0 0 40 40" aria-hidden="true">
+        <rect width="40" height="40" rx="11" fill="url(#g)"/>
+        <path d="M8 20h3M13 14v12M18 9v22M23 14v12M28 17v6M33 20h-2" stroke="#fff" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2ec4d6"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient></defs>
+      </svg>
+      <span class="brand-name">Convert</span>
+    </a>
+
+    <div class="menu-wrap">
+      <button id="menuBtn" class="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="menu">
+        <span></span><span></span><span></span>
+      </button>
+      <nav id="menu" class="menu" hidden>
+        <a href="#" data-go="features">Features</a>
+        <a href="#" data-go="login">Login or sign up</a>
+        <a href="mailto:contact@example.com">Contact us</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Home -->
+    <section class="view active" id="home">
+      <h1>Convert any voice into another.</h1>
+      <p class="lead">Record a few seconds of speech, pick who you want to sound like, and get the converted audio back.</p>
+      <button class="btn primary" data-go="gender">Start converting</button>
+    </section>
+
+    <!-- Gender -->
+    <section class="view" id="gender">
+      <h2>Convert your voice to…</h2>
+      <div class="choices two">
+        <button class="choice" data-gender="female"><span class="emoji">👩</span>Female</button>
+        <button class="choice" data-gender="male"><span class="emoji">👨</span>Male</button>
+      </div>
+      <button class="btn ghost" data-go="home">Back</button>
+    </section>
+
+    <!-- Age -->
+    <section class="view" id="age">
+      <h2 id="ageTitle">Choose an age group</h2>
+      <div class="choices three" id="ageChoices"></div>
+      <button class="btn ghost" data-go="gender">Back</button>
+    </section>
+
+    <!-- Record -->
+    <section class="view" id="record">
+      <h2>Record your voice</h2>
+      <p class="lead" id="targetLabel"></p>
+
+      <button id="recBtn" class="rec-btn" aria-label="Start recording"><span class="dot"></span></button>
+      <p id="recStatus" class="status">Press the button to start recording.</p>
+      <div class="timer" id="timer">00:00</div>
+
+      <audio id="player" controls hidden></audio>
+
+      <div class="row">
+        <button class="btn ghost" data-go="age">Back</button>
+        <button id="convertBtn" class="btn primary" disabled>Convert</button>
+      </div>
+
+      <div id="result" class="result" hidden>
+        <h3>Converted audio</h3>
+        <audio id="resultPlayer" controls></audio>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="view" id="features">
+      <h2>Features</h2>
+      <ul class="feature-list">
+        <li>Convert your voice to a male or female target voice.</li>
+        <li>Pick a kid, adult, or older voice.</li>
+        <li>Record directly in your browser, no extra software.</li>
+      </ul>
+      <button class="btn ghost" data-go="home">Back</button>
+    </section>
+
+    <!-- Login / sign up -->
+    <section class="view" id="login">
+      <h2 id="authTitle">Log in</h2>
+      <div class="tabs">
+        <button class="tab active" data-auth="login">Log in</button>
+        <button class="tab" data-auth="signup">Sign up</button>
+      </div>
+      <div class="form" id="authForm">
+        <label>Email<input type="email" id="email" autocomplete="email" placeholder="you@example.com"></label>
+        <label>Password<input type="password" id="password" autocomplete="current-password" placeholder="••••••••"></label>
+        <button class="btn primary" id="authSubmit">Log in</button>
+        <p class="status" id="authMsg"></p>
+      </div>
+      <button class="btn ghost" data-go="home">Back</button>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
