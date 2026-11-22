@@ -1,18 +1,17 @@
 // ====== CONFIG ======
-// Change this to wherever your backend runs.
-const API_URL = "http://localhost:8000";
+// The backend URL lives in config.js
+const API_URL = (window.VC_CONFIG && window.VC_CONFIG.API_URL) || "http://localhost:8000";
+const NGROK = { "ngrok-skip-browser-warning": "1" }; // skips ngrok's interstitial page
 
 // ====== STATE ======
 const state = { gender: null, age: null, blob: null };
 
 const AGES = {
   female: [
-    { id: "kid", label: "Girl", note: "Child voice", emoji: "👧" },
     { id: "adult", label: "Woman", note: "Mid-aged voice", emoji: "👩" },
     { id: "old", label: "Older woman", note: "Elderly voice", emoji: "👵" },
   ],
   male: [
-    { id: "kid", label: "Boy", note: "Child voice", emoji: "👦" },
     { id: "adult", label: "Man", note: "Mid-aged voice", emoji: "👨" },
     { id: "old", label: "Older man", note: "Elderly voice", emoji: "👴" },
   ],
@@ -154,15 +153,31 @@ $("#convertBtn").addEventListener("click", async () => {
   form.append("gender", state.gender);
   form.append("age", state.age);
 
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   try {
-    const res = await fetch(`${API_URL}/convert`, { method: "POST", body: form });
-    if (!res.ok) throw new Error(`Server returned ${res.status}`);
-    const out = await res.blob(); // backend should return the converted audio file
+    const res = await fetch(`${API_URL}/convert`, { method: "POST", body: form, headers: NGROK });
+    if (!res.ok) throw new Error((await res.text()) || `Server returned ${res.status}`);
+    const { job_id } = await res.json();
+
+    const deadline = Date.now() + 10 * 60 * 1000;
+    for (;;) {
+      if (Date.now() > deadline) throw new Error("Timed out waiting for the server.");
+      await sleep(2000);
+      const job = await (await fetch(`${API_URL}/jobs/${job_id}`, { headers: NGROK })).json();
+      if (job.status === "done") break;
+      if (job.status === "error") throw new Error(job.error || "Conversion failed.");
+      setStatus(job.status === "queued" ? "Waiting in queue…"
+        : job.stage === "style" ? "Refining the voice (style transfer)…" : "Converting the voice…");
+    }
+
+    const out = await (await fetch(`${API_URL}/jobs/${job_id}/audio`, { headers: NGROK })).blob();
     $("#resultPlayer").src = URL.createObjectURL(out);
     $("#result").hidden = false;
     setStatus("Done.");
   } catch (err) {
-    setStatus("Could not reach the backend yet. Your recording is saved and ready to send.", true);
+    const offline = err instanceof TypeError;
+    setStatus(offline ? "The voice server is offline. Start the Kaggle notebook, then try again."
+                      : "Conversion failed: " + err.message, true);
     console.error(err);
   }
   btn.disabled = false;
